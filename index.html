@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Tiers - Official PvP Tier List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Teko:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0e14;
+      --card-bg: #121721;
+      --accent-azure: #00d2ff;
+      --tier-ht: #ff4757;
+      --tier-lt: #ffa502;
+      --text-main: #ffffff;
+      --text-muted: #9aa0a6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: var(--card-bg);
+      border-bottom: 2px solid #1f2937;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-family: 'Teko', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      color: var(--accent-azure);
+      text-transform: uppercase;
+    }
+
+    .ip-box {
+      background: #000;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--accent-azure);
+      color: var(--accent-azure);
+      font-weight: bold;
+      font-family: monospace;
+    }
+
+    /* Tier Table Grid */
+    .tier-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 16px;
+      text-align: center;
+      border-bottom: 1px solid #1f2a38;
+    }
+
+    th {
+      background: #18202c;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    .player-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: right;
+    }
+
+    .player-head {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+    }
+
+    /* Badges Style matching MCTiers */
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .badge-ht { background: rgba(255, 71, 87, 0.2); color: #ff4757; border: 1px solid #ff4757; }
+    .badge-lt { background: rgba(255, 165, 2, 0.2); color: #ffa502; border: 1px solid #ffa502; }
+    .badge-none { color: #4b5563; }
+
+    .rank-num { font-weight: 800; color: var(--text-muted); }
+    .rank-1 { color: #ffd700; }
+    .rank-2 { color: #c0c0c0; }
+    .rank-3 { color: #cd7f32; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">AZURE TIERS</div>
+    <div class="ip-box">IP: AzurePvP.network</div>
+  </header>
+
+  <div class="tier-container">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th style="text-align: right;">اللاعب</th>
+          <th>النقاط</th>
+          <th>Crystal</th>
+          <th>Sword</th>
+          <th>Mace</th>
+          <th>UHC</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard">
+        <!-- البيانات بتنزل هنا تلقائياً من الـ API -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // جلب البيانات مباشرة من سيرفرك
+    async function loadTiers() {
+      // ضع هنا رابط الـ API الخاص ببيانات سيرفرك
+      const res = await fetch('/api/players');
+      const players = await res.json();
+      
+      const tbody = document.getElementById('leaderboard');
+      tbody.innerHTML = players.map((p, i) => `
+        <tr>
+          <td class="rank-num rank-${i+1}">#${i+1}</td>
+          <td class="player-cell">
+            <img class="player-head" src="https://mc-heads.net/avatar/${p.username}/36" alt="${p.username}">
+            <span style="font-weight: bold;">${p.username}</span>
+          </td>
+          <td style="font-weight: bold; color: var(--accent-azure);">${p.points}</td>
+          <td><span class="badge ${p.crystal.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${p.crystal}</span></td>
+          <td><span class="badge ${p.sword.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${p.sword}</span></td>
+          <td><span class="badge ${p.mace.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${p.mace}</span></td>
+          <td><span class="badge ${p.uhc.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${p.uhc}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    // تجربة بيانات مؤقتة للشكل
+    const demoData = [
+      { username: 'Meqdad', points: 450, crystal: 'HT1', sword: 'LT1', mace: 'HT1', uhc: 'HT2' },
+      { username: 'Mohamed', points: 320, crystal: 'LT1', sword: 'HT2', mace: 'LT1', uhc: 'LT2' }
+    ];
+    
+    // تشغيل العرض
+    document.getElementById('leaderboard').innerHTML = demoData.map((p, i) => `
+        <tr>
+          <td class="rank-num rank-${i+1}">#${i+1}</td>
+          <td class="player-cell">
+            <img class="player-head" src="https://mc-heads.net/avatar/${p.username}/36">
+            <span>${p.username}</span>
+          </td>
+          <td style="font-weight: bold; color: var(--accent-azure);">${p.points}</td>
+          <td><span class="badge ${p.crystal.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${p.crystal}</span></td>
+          <td><span class="badge ${p.sword.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${p.sword}</span></td>
+          <td><span class="badge ${p.mace.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${p.mace}</span></td>
+          <td><span class="badge ${p.uhc.startsWith('HT') ? 'badge-ht' : 'badge-lt'}">${p.uhc}</span></td>
+        </tr>
+    `).join('');
+  </script>
+</body>
+</html>
